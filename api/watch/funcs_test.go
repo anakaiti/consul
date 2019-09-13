@@ -14,7 +14,6 @@ import (
 	"fmt"
 	"math/big"
 	"net/url"
-	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -77,7 +76,8 @@ func updateConnectCA(t *testing.T, client *api.Client) {
 
 	bs, err = x509.MarshalPKIXPublicKey(pk.Public())
 	require.NoError(t, err)
-	kID := []byte(strings.Replace(fmt.Sprintf("% x", sha256.Sum256(bs)), " ", ":", -1))
+	hash := sha256.Sum256(bs)
+	kID := hash[:]
 
 	// Create the CA cert
 	template := x509.Certificate{
