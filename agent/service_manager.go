@@ -56,7 +56,7 @@ func NewServiceManager(agent *Agent) *ServiceManager {
 
 // Stop forces all background goroutines to terminate and blocks until they complete.
 //
-// NOTE: must NOT hold the Agent.stateLock!
+// NOTE: the caller must NOT hold the Agent.stateLock!
 func (s *ServiceManager) Stop() {
 	s.cancel()
 	s.running.Wait()
@@ -114,7 +114,7 @@ func (s *ServiceManager) registerOnce(args *addServiceRequest) error {
 // semantics there. The one key difference is that the service provided will be
 // merged with the global defaults before registration.
 //
-// NOTE: must hold the Agent.stateLock!
+// NOTE: the caller must hold the Agent.stateLock!
 func (s *ServiceManager) AddService(
 	service *structs.NodeService,
 	chkTypes []*structs.CheckType,
@@ -193,7 +193,7 @@ func (s *ServiceManager) AddService(
 	return nil
 }
 
-// NOTE: must hold the Agent.stateLock!
+// NOTE: the caller must hold the Agent.stateLock!
 func (s *ServiceManager) RemoveService(serviceID string) {
 	s.servicesLock.Lock()
 	defer s.servicesLock.Unlock()
@@ -353,7 +353,7 @@ func (w *serviceConfigWatch) Stop() {
 // runWatch handles any update events from the cache.Notify until the
 // config watch is shut down.
 //
-// NOTE: must NOT hold the Agent.stateLock!
+// NOTE: the caller must NOT hold the Agent.stateLock!
 func (w *serviceConfigWatch) runWatch(wg *sync.WaitGroup) {
 	defer wg.Done()
 	defer w.running.Done()
@@ -373,7 +373,7 @@ func (w *serviceConfigWatch) runWatch(wg *sync.WaitGroup) {
 // handleUpdate receives an update event the global config defaults, updates
 // the local state and re-registers the service with the newly merged config.
 //
-// NOTE: must NOT hold the Agent.stateLock!
+// NOTE: the caller must NOT hold the Agent.stateLock!
 func (w *serviceConfigWatch) handleUpdate(event cache.UpdateEvent) error {
 	// If we got an error, log a warning if this is the first update; otherwise return the error.
 	// We want the initial update to cause a service registration no matter what.
