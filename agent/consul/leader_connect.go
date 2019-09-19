@@ -334,8 +334,14 @@ func (s *Server) initializeSecondaryCA(provider ca.Provider, roots structs.Index
 			return fmt.Errorf("Failed to set the intermediate certificate with the CA provider: %v", err)
 		}
 
+		intermediateCert, err := connect.ParseCert(intermediatePEM)
+		if err != nil {
+			return fmt.Errorf("error parsing intermediate cert: %v", err)
+		}
+
 		// Append the new intermediate to our local active root entry.
 		newActiveRoot.IntermediateCerts = append(newActiveRoot.IntermediateCerts, intermediatePEM)
+		newActiveRoot.SigningKeyID = connect.EncodeSigningKeyID(intermediateCert.SubjectKeyId)
 		newIntermediate = true
 
 		s.logger.Printf("[INFO] connect: received new intermediate certificate from primary datacenter")
