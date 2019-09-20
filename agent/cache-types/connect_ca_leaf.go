@@ -96,7 +96,7 @@ type ConnectCALeaf struct {
 // since all times we get from our wall clock should point to the same Location
 // anyway.
 type fetchState struct {
-	// authorityKeyId is the key ID of the CA (intermediate) root that signed
+	// authorityKeyId is the ID of the CA key (whether root or intermediate) that signed
 	// the current cert.  This is just to save parsing the whole cert everytime
 	// we have to check if the root changed.
 	authorityKeyID string
